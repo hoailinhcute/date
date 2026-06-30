@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you go on a date with me? ❤️</title>
+    
+    <!-- -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'heartbeat': 'heartbeat 1s infinite alternate',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        heartbeat: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts for Cute Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Playpen+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- -->
+    <style>
+        body {
+            font-family: 'Playpen Sans', 'Comfortaa', cursive, sans-serif;
+            background: radial-gradient(circle at center, #1e112a 0%, #0d0614 100%);
+            overflow-x: hidden;
+        }
+        /* Hiệu ứng chuyển động mượt mà cho nút No */
+        #no-btn {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* Glow effect */
+        .neon-glow {
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.35);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+        }
+        /* Tùy biến thanh chọn lịch dễ thương */
+        input[type="date"], input[type="time"] {
+            color-scheme: dark;
+        }
+    </style>
+</head>
+<body class="h-full flex items-center justify-center text-slate-100 p-4 relative select-none">
+
+    <!-- Canvas dành cho hiệu ứng pháo hoa -->
+    <canvas id="fireworks" class="absolute inset-0 w-full h-full pointer-events-none z-50 hidden"></canvas>
+
+    <!-- -->
+    <!-- Hộp nội dung chính (Glassmorphism) -->
+    <div id="main-card" class="max-w-md w-full bg-white/5 border border-pink-500/20 backdrop-blur-xl rounded-3xl p-6 md:p-8 text-center neon-glow transition-all duration-500 relative z-10">
+        
+        <!-- Phần hình ảnh Mèo Cute đổi trạng thái -->
+        <div id="cat-container" class="w-48 h-48 mx-auto mb-6 flex items-center justify-center relative">
+            
+            <!-- Mèo Đợi Chờ (Bước 1: Nơ hồng cầm hoa tulip) -->
+            <img id="cat-waiting" src="sticker-meo-cute-27-1.jpg" alt="Mèo thắt nơ hồng dễ thương" class="w-full h-full object-cover rounded-2xl border-4 border-pink-400/30 shadow-lg animate-bounce-slow">
+
+            <!-- Mèo Thảng Thốt (Bước 2: Mèo Dubai ngầu lòi) -->
+            <img id="cat-shocked" src="avatar-meo-dang-yeu-11.webp" alt="Mèo đeo kính râm hài hước" class="w-full h-full object-cover rounded-2xl border-4 border-yellow-400/30 shadow-lg hidden animate-wiggle">
+
+            <!-- Mèo Lập Kế Hoạch (Bước 3: Vẫn là bé mèo kính râm siêu cool lên lịch) -->
+            <img id="cat-planning" src="avatar-meo-dang-yeu-11.webp" alt="Mèo lên kế hoạch hẹn hò" class="w-full h-full object-cover rounded-2xl border-4 border-blue-400/30 shadow-lg hidden">
+
+            <!-- Mèo Ôm Tim Hạnh Phúc (Bước 4: Trở lại bé mèo ôm hoa tulip viên mãn) -->
+            <img id="cat-happy" src="sticker-meo-cute-27-1.jpg" alt="Mèo hạnh phúc ôm hoa" class="w-full h-full object-cover rounded-2xl border-4 border-green-400/30 shadow-lg hidden animate-heartbeat">
+        </div>
+
+        <!-- -->
+        <!-- ================= BƯỚC 1: LỜI MỜI HẸN HÒ ================= -->
+        <div id="phase-1" class="transition-opacity duration-300">
+            <!-- Dòng Subtitle đáng yêu -->
+            <p class="text-pink-300 font-medium tracking-wide mb-2 text-sm uppercase animate-pulse">
+                No pressure but.... say yes 😉
+            </p>
+
+            <!-- Câu hỏi chính -->
+            <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight mb-8 drop-shadow-md">
+                Will you go on a date with me? 💖
+            </h1>
+
+            <!-- Khu vực chứa các nút bấm -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 relative min-h-[60px]">
+                <!-- NÚT YES -->
+                <button id="yes-btn" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold text-lg rounded-2xl shadow-lg transform active:scale-95 transition-all duration-150 flex items-center justify-center gap-2 min-w-[140px] z-10">
+                    Yes ❤️
+                </button>
+                
+                <!-- NÚT NO (Troll di động) -->
+                <button id="no-btn" class="w-full sm:w-auto px-8 py-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-lg rounded-2xl shadow-md min-w-[140px] z-20 select-none">
+                    No 🥺
+                </button>
+            </div>
+        </div>
+
+        <!-- -->
+        <!-- ================= BƯỚC 2: MÀN HÌNH SỬNG SỐT "NO WAY" ================= -->
+        <div id="phase-2" class="hidden transition-opacity duration-300">
+            <p class="text-yellow-300 font-bold tracking-widest mb-2 text-sm uppercase animate-pulse">
+                OMG... WAIT, WHAT?! 😳
+            </p>
+            <!-- Câu thoại gây hài -->
+            <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-red-400 to-yellow-300 leading-snug mb-8 drop-shadow-lg">
+                no way. No way. <br>I had a whole speech prepared for if you said no!
+            </h1>
+            
+            <!-- Chữ "okay" rực rỡ để tương tác qua bước 3 -->
+            <div class="flex justify-center mt-6">
+                <div id="okay-trigger" class="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full cursor-pointer transition-all duration-300 transform hover:scale-110 active:scale-95 text-xl font-black text-pink-400 tracking-wider hover:text-pink-300 neon-glow animate-bounce">
+                    okay 🤫
+                </div>
+            </div>
+        </div>
+
+        <!-- -->
+        <!-- ================= BƯỚC 3: BOOK NGÀY GIỜ HẸN HÒ ================= -->
+        <div id="phase-3" class="hidden transition-opacity duration-300">
+            <p class="text-pink-300 font-bold tracking-wide mb-2 text-sm uppercase">
+                Let's plan this! 🗓️
+            </p>
+            <!-- Dòng tiêu đề -->
+            <h1 class="text-3xl font-bold text-white leading-tight mb-6 drop-shadow-md">
+                When will you be free?
+            </h1>
+
+            <!-- Khu vực nhập ngày và giờ -->
+            <div class="space-y-4 max-w-xs mx-auto mb-8">
+                <!-- Chọn ngày -->
+                <div class="text-left">
+                    <label class="block text-xs text-pink-300 font-medium mb-1 ml-2">Chọn ngày: *</label>
+                    <input type="date" id="date-input" class="w-full px-4 py-3 bg-white/10 border border-pink-500/30 rounded-2xl text-white font-bold outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all">
+                </div>
+                <!-- Chọn giờ -->
+                <div class="text-left">
+                    <label class="block text-xs text-pink-300 font-medium mb-1 ml-2">Chọn giờ (không bắt buộc):</label>
+                    <input type="time" id="time-input" class="w-full px-4 py-3 bg-white/10 border border-pink-500/30 rounded-2xl text-white font-bold outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all">
+                </div>
+            </div>
+
+            <!-- Nút xác nhận ngày giờ -->
+            <button id="book-confirm-btn" class="w-full px-8 py-4 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-slate-950 font-extrabold text-lg rounded-2xl shadow-lg transform active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">
+                This one! ✨
+            </button>
+        </div>
+
+        <!-- -->
+        <!-- ================= BƯỚC 4: HOÀN THÀNH (BÁO CÁO KẾT QUẢ) ================= -->
+        <div id="phase-4" class="hidden transition-opacity duration-300">
+            <p class="text-green-400 font-extrabold tracking-widest mb-2 text-base uppercase animate-bounce">
+                SUCCESSFULLY BOOKED! 🎉
+            </p>
+            <h1 class="text-3xl font-black text-white leading-tight mb-4 drop-shadow-md">
+                Yeaaaaah! It's a date! ❤️
+            </h1>
+            
+            <!-- Tóm tắt lịch hẹn -->
+            <div class="bg-white/5 border border-green-500/20 rounded-2xl p-4 mb-6 text-left space-y-2">
+                <p class="text-sm text-slate-300">Tóm tắt cuộc hẹn siêu cấp ngọt ngào:</p>
+                <div class="h-px bg-white/10 my-2"></div>
+                <p class="text-md text-white font-bold flex items-center gap-2">
+                    📅 Ngày: <span id="summary-date" class="text-green-400 font-extrabold">-- / -- / ----</span>
+                </p>
+                <p class="text-md text-white font-bold flex items-center gap-2">
+                    ⏰ Giờ: <span id="summary-time" class="text-green-400 font-extrabold">Bất cứ lúc nào</span>
+                </p>
+            </div>
+
+            <p class="text-sm text-pink-300/80 italic mb-6">
+                "Hãy chụp màn hình này và gửi ngay cho tớ nhé!"
+            </p>
+
+            <!-- Nút gửi liên hệ trực tiếp -->
+            <button id="send-direct-btn" class="w-full px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-extrabold text-lg rounded-2xl shadow-lg transform active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">
+                Nhắn cho tớ ngay thôi! 🥰
+            </button>
+        </div>
+
+    </div>
+
+    <!-- -->
+    <script>
+        // Các phần tử giao diện
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const mainCard = document.getElementById('main-card');
+        const canvas = document.getElementById('fireworks');
+
+        // Các hình vẽ mèo đổi trạng thái
+        const catWaiting = document.getElementById('cat-waiting');
+        const catShocked = document.getElementById('cat-shocked');
+        const catPlanning = document.getElementById('cat-planning');
+        const catHappy = document.getElementById('cat-happy');
+
+        // Các phase nội dung
+        const phase1 = document.getElementById('phase-1');
+        const phase2 = document.getElementById('phase-2');
+        const phase3 = document.getElementById('phase-3');
+        const phase4 = document.getElementById('phase-4');
+
+        // Nút chuyển tiếp và nhập liệu
+        const okayTrigger = document.getElementById('okay-trigger');
+        const dateInput = document.getElementById('date-input');
+        const timeInput = document.getElementById('time-input');
+        const bookConfirmBtn = document.getElementById('book-confirm-btn');
+        const sendDirectBtn = document.getElementById('send-direct-btn');
+
+        // Các phần tử tóm tắt thông tin ở Bước 4
+        const summaryDate = document.getElementById('summary-date');
+        const summaryTime = document.getElementById('summary-time');
+
+        // Cài đặt ngày tối thiểu là ngày hôm nay để tránh book nhầm ngày quá khứ
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+
+
+        // --- HÀM TẠO ÂM THANH SUNG SƯỚNG (Web Audio API) ---
+        function playVictorySound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Tiếng Chime chiến thắng lung linh thăng hoa
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; 
+                notes.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        
+                        osc.type = 'triangle'; 
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        
+                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+                        
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 1.2);
+                    }, index * 100);
+                });
+
+                // Tiếng cười đùa vui vẻ mô phỏng bằng tần số biến thiên nhanh ngộ nghĩnh
+                setTimeout(() => {
+                    const duration = 1.5;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sawtooth';
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    // Tạo hiệu ứng tiếng rung ha-ha-ha
+                    for (let i = 0; i < 15; i++) {
+                        const time = audioCtx.currentTime + (i * 0.1);
+                        osc.frequency.setValueAtTime(200 + (Math.sin(i) * 60), time);
+                    }
+                    
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                    
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                }, 800);
+                
+            } catch (e) {
+                console.log("AudioContext không tự động phát được do rào cản tương tác.");
+            }
+        }
+
+
+        // --- TÍNH NĂNG TROLL: NÚT NO TỰ CHẠY TRỐN ---
+        function moveNoButton(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            // Kích thước nút và kích thước màn hình
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            
+            // Biên an toàn tránh bay ra ngoài viewport
+            const padding = 24;
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            
+            // Tính toán tọa độ ngẫu nhiên
+            let randomX = Math.random() * maxX;
+            let randomY = Math.random() * maxY;
+            
+            // Đảm bảo không đè lên vùng hộp chính (card) để tránh mất thẩm mỹ
+            const cardRect = mainCard.getBoundingClientRect();
+            const safeDistance = 80;
+            
+            // Nếu tọa độ ngẫu nhiên rơi trúng cái thẻ chính, đẩy nó ra rìa xa hơn
+            if (randomX > cardRect.left - safeDistance && randomX < cardRect.right + safeDistance &&
+                randomY > cardRect.top - safeDistance && randomY < cardRect.bottom + safeDistance) {
+                randomX = (randomX + 200) % maxX;
+                randomY = (randomY + 200) % maxY;
+            }
+
+            randomX = Math.max(padding, randomX);
+            randomY = Math.max(padding, randomY);
+
+            // Chuyển nút sang trạng thái fixed tự do bay lượn
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            noBtn.style.zIndex = '999';
+        }
+
+        // Gắn sự kiện né tránh mượt mà
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton(e);
+        });
+
+
+        // --- KHI CRUSH ĐỒNG Ý: BẤM YES (Chuyển sang Bước 2) ---
+        yesBtn.addEventListener('click', () => {
+            // 1. Kích hoạt pháo hoa bùng nổ
+            canvas.classList.remove('hidden');
+            startFireworks();
+
+            // 2. Chuyển đổi giao diện bước 1 sang bước 2
+            phase1.classList.add('hidden');
+            phase2.classList.remove('hidden');
+
+            // 3. Đổi chú mèo sang trạng thái hoang mang sửng sốt
+            catWaiting.classList.add('hidden');
+            catShocked.classList.remove('hidden');
+
+            // 4. Phát tiếng cười chiến thắng vui sướng
+            playVictorySound();
+        });
+
+
+        // --- CHUYỂN TIẾP TỪ BƯỚC 2 SANG BƯỚC 3 (Chạm hoặc Rê vào chữ "okay") ---
+        function transitionToBooking() {
+            // Thay đổi sang giao diện lập kế hoạch
+            phase2.classList.add('hidden');
+            phase3.classList.remove('hidden');
+
+            // Đổi chú mèo sang tư thế tính toán lịch trình cực ngầu
+            catShocked.classList.add('hidden');
+            catPlanning.classList.remove('hidden');
+            
+            // Reset pháo hoa để tập trung nhìn rõ lịch
+            stopFireworks();
+        }
+
+        // Kích hoạt khi di chuyển, chạm hoặc click vào chữ "okay"
+        okayTrigger.addEventListener('mouseenter', transitionToBooking);
+        okayTrigger.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            transitionToBooking();
+        }, { passive: false });
+        okayTrigger.addEventListener('click', transitionToBooking);
+
+
+        // --- KHI BẤM XÁC NHẬN LỊCH HẸN "This one!" (Chuyển sang Bước 4) ---
+        bookConfirmBtn.addEventListener('click', () => {
+            const rawDate = dateInput.value;
+            const rawTime = timeInput.value;
+
+            // Bắt buộc phải chọn ngày
+            if (!rawDate) {
+                // Rung nhẹ thẻ để nhắc nhở chọn ngày
+                mainCard.classList.add('animate-wiggle');
+                setTimeout(() => mainCard.classList.remove('animate-wiggle'), 500);
+                
+                // Highlight viền đỏ tạm thời vào ô lịch
+                dateInput.classList.add('border-red-500');
+                setTimeout(() => dateInput.classList.remove('border-red-500'), 1500);
+                return;
+            }
+
+            // Định dạng ngày hẹn hò xinh xắn (DD/MM/YYYY)
+            const dateParts = rawDate.split('-');
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            
+            // Định dạng giờ hẹn hò
+            const formattedTime = rawTime ? `${rawTime}` : "Bất cứ lúc nào cậu rảnh";
+
+            // Cập nhật thông tin vào bảng tổng kết
+            summaryDate.textContent = formattedDate;
+            summaryTime.textContent = formattedTime;
+
+            // Chuyển sang Phase hoàn thành thành công
+            phase3.classList.add('hidden');
+            phase4.classList.remove('hidden');
+
+            // Chuyển sang chú mèo ôm tim hạnh phúc viên mãn
+            catPlanning.classList.add('hidden');
+            catHappy.classList.remove('hidden');
+
+            // Chuyển hộp sang màu rực rỡ xanh lục dịu mát tràn trề năng lượng tích cực
+            mainCard.classList.remove('neon-glow');
+            mainCard.classList.add('neon-glow-green', 'border-emerald-500/30');
+
+            // Bắn tiếp pháo hoa liên hoàn chào mừng sự kiện trọng đại này!
+            canvas.classList.remove('hidden');
+            startFireworks();
+            playVictorySound();
+        });
+
+
+        // --- NÚT GỬI TIN NHẮN CUỐI CÙNG ---
+        sendDirectBtn.addEventListener('click', () => {
+            // Thay đổi link này thành link liên hệ của bạn (Messenger, Zalo, v.v...)
+            window.open('https://m.me/', '_blank');
+        });
+
+
+        // --- HỆ THỐNG HIỆU ỨNG PHÁO HOA CANVAS ---
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationFrameId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3.5 + 1;
+                // Vận tốc hướng tâm đa góc
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 7 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.07;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.008;
+            }
+
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                // Ánh hào quang tỏa ra từ hạt lửa
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createFirework(x, y) {
+            const colors = ['#FF1493', '#FF3366', '#FFD700', '#00FFCC', '#E0A3FF', '#99FF33', '#FF66B2'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 75; i++) {
+                particles.push(new Particle(x, y, randomColor));
+            }
+        }
+
+        function animateFireworks() {
+            ctx.fillStyle = 'rgba(13, 6, 20, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Ngẫu nhiên nổ thêm pháo hoa trên màn hình nền
+            if (Math.random() < 0.04) {
+                createFirework(
+                    Math.random() * canvas.width,
+                    Math.random() * (canvas.height * 0.5) + (canvas.height * 0.1)
+                );
+            }
+
+            animationFrameId = requestAnimationFrame(animateFireworks);
+        }
+
+        function startFireworks() {
+            // Nổ kích hoạt lập tức
+            createFirework(canvas.width / 2, canvas.height / 3);
+            setTimeout(() => createFirework(canvas.width * 0.25, canvas.height * 0.4), 250);
+            setTimeout(() => createFirework(canvas.width * 0.75, canvas.height * 0.35), 450);
+            
+            if (!animationFrameId) {
+                animateFireworks();
+            }
+        }
+
+        function stopFireworks() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = [];
+            canvas.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
